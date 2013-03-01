@@ -12,64 +12,29 @@ using CassandraSharp.CQLPoco;
 using CassandraSharp.CQLPropertyBag;
 using CassandraSharp.Extensibility;
 using System.Diagnostics;
+using CassandraStudy.Schemas;
 
 
 namespace CassandraStudy
 {
     class Program
     {
-        internal class SchemaColumns
-        {
-            public string KeyspaceName { get; set; }
-
-            public string ColumnFamilyName { get; set; }
-
-            public string ColumnName { get; set; }
-
-            public int ComponentIndex { get; set; }
-
-            public string Validator { get; set; }
-
-            public string IndexName { get; set; }
-        }
-
-        internal class SchemaUser
-        {
-            public string Uid { get; set; }
-
-            public string Flow { get; set; }
-
-            public string LastState { get; set; }
-
-            public string Test1 { get; set; }
-
-            public string Test2 { get; set; }
-        }
-
         static void Main(string[] args)
         {
-
             Dal dal = new Dal();
             Stopwatch st = new Stopwatch();
 
-            //// Generating Users
-            //st.Start();
-            Tuple<int, long> done = dal.GenerateUsers(100);
-            //st.Stop();
-            
-            
-            Console.WriteLine("Created {0} users in {1} ms.", done.Item1, done.Item2);
+            //// Generate users
+            //Tuple<int, long> done = dal.GenerateUsers(1000);
+            //Console.WriteLine("Created {0} users in {1} ms.", done.Item1, done.Item2);
 
             //// Reading Users
-            //st.Start();
-            //var users = dal.GetUsers("", 0);
-            //st.Stop();
-
-            //int count = users.Count();
-
-            //DisplayResult(users);
-
-            //Console.WriteLine("Done. Read {0} users in {1} ms.", count, st.ElapsedMilliseconds);
+            st.Restart();
+            var users = dal.GetUsers("", 0);
+            st.Stop();
+            int count = users.Count();
+            DisplayResult(users);
+            Console.WriteLine("Read {0} users in {1} ms.", count, st.ElapsedMilliseconds);
 
 
             //XmlConfigurator.Configure();
@@ -110,18 +75,9 @@ namespace CassandraStudy
             }
         }
 
-        private static void DisplayResult(IEnumerable<SchemaUser> req)
+        private static void DisplayResult(IEnumerable<ColumnSchema> req)
         {
-            foreach (SchemaUser user in req)
-            {
-                Console.WriteLine("Uid={0} Flow={1} LastState={2} Test1={3} Test2={4}",
-                                  user.Uid, user.Flow, user.LastState, user.Test1, user.Test2);
-            }
-        }
-
-        private static void DisplayResult(IEnumerable<SchemaColumns> req)
-        {
-            foreach (SchemaColumns schemaColumns in req)
+            foreach (ColumnSchema schemaColumns in req)
             {
                 Console.WriteLine("KeyspaceName={0} ColumnFamilyName={1} ColumnName={2} IndexName={3}",
                                   schemaColumns.KeyspaceName, schemaColumns.ColumnFamilyName, schemaColumns.ColumnName, schemaColumns.IndexName);

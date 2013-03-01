@@ -8,15 +8,11 @@ using CassandraSharp.CQLPoco;
 using CassandraSharp.CQLPropertyBag;
 using System.Diagnostics;
 using System.Threading;
+using CassandraStudy.Schemas;
 //using CassandraSharp.Extensibility;
 
 namespace CassandraStudy
 {
-    public class CountSchema
-    {
-        public long Count { get; set; }
-    }
-
     internal class Dal : IDal
     {
 
@@ -98,8 +94,9 @@ namespace CassandraStudy
 
                 // Count users before
                 var resCount = cmd.Execute<CountSchema>(countUsers).Result;
-                long countBefore = resCount.FirstOrDefault().Count;
+                long countBefore = resCount.First().Count;
 
+                // Add users
                 st.Start();
                 var preparedInsert = cmd.Prepare(insertBatch);
                 for (int i = 0; i < num; i++)
@@ -120,42 +117,10 @@ namespace CassandraStudy
 
                 // Count users after
                 resCount = cmd.Execute<CountSchema>(countUsers).Result;
-                long countAfter = resCount.FirstOrDefault().Count;
+                long countAfter = resCount.First().Count;
 
                 count = (int)(countAfter - countBefore);
             }
-
-
-            //while (Thread.VolatileRead(ref _running) > 0)
-            //{
-            //    Console.WriteLine("Running {0}", _running);
-            //    Thread.Sleep(1000);
-            //}
-
-            //st.Start();
-            //for (int i = 0; i < num; i++)
-            //{
-            //    string insertUsers = string.Format("INSERT INTO dispatch_cql3.users (uid, flow, last_state, test1, test2)" +
-            //                                           "VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')", 
-            //                                           ids[rnd.Next(ids.Length)],
-            //                                           flows[rnd.Next(flows.Length)], 
-            //                                           "/random", 
-            //                                           chars[rnd.Next(chars.Length)],
-            //                                           chars[rnd.Next(chars.Length)]);
-            //    var resCount = cmd.Execute(insertUsers);
-            //    resCount.Wait();
-
-            //    if (resCount.IsCompleted)
-            //    {
-            //        count++;
-            //    }
-            //    else
-            //    {
-            //        i--;
-            //    }
-            //}
-            //st.Stop();
-            //}
 
             ClusterManager.Shutdown();
             return new Tuple<int, long>(count, st.ElapsedMilliseconds);
