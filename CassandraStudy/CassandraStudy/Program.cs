@@ -52,12 +52,25 @@ namespace CassandraStudy
             Dal dal = new Dal();
             Stopwatch st = new Stopwatch();
 
-            st.Start();
-            int done = dal.GenerateUsers(1000);
-            st.Stop();
+            //// Generating Users
+            //st.Start();
+            Tuple<int, long> done = dal.GenerateUsers(1000);
+            //st.Stop();
+            
+            
+            Console.WriteLine("Created {0} users in {1} ms.", done.Item1, done.Item2);
 
+            //// Reading Users
+            //st.Start();
+            //var users = dal.GetUsers("", 0);
+            //st.Stop();
 
-            Console.WriteLine("Created {0} users in {1} ms.", done, st.ElapsedMilliseconds);
+            //int count = users.Count();
+
+            //DisplayResult(users);
+
+            //Console.WriteLine("Done. Read {0} users in {1} ms.", count, st.ElapsedMilliseconds);
+
 
             //XmlConfigurator.Configure();
             //using (ICluster cluster = ClusterManager.GetCluster("TestCassandra"))

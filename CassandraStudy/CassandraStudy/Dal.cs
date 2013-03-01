@@ -6,6 +6,7 @@ using CassandraSharp.Config;
 using CassandraSharp.CQL;
 using CassandraSharp.CQLPoco;
 using CassandraSharp.CQLPropertyBag;
+using System.Diagnostics;
 //using CassandraSharp.Extensibility;
 
 namespace CassandraStudy
@@ -19,7 +20,15 @@ namespace CassandraStudy
 
         public IEnumerable<IDictionary<string, object>> GetUsers(string startKey, int slice)
         {
-            throw new NotImplementedException();
+            using (ICluster cluster = ClusterManager.GetCluster("TestCassandra"))
+            {
+                var cmd = cluster.CreatePropertyBagCommand();
+                const string cqlUsers = "SELECT * FROM dispatch_cql3.users";// WHERE uid = '05f7200f-d000-0000-0000-000000000000' AND flow = 'Merlin_1'";
+                var users = cmd.Execute<IDictionary<string, object>>(cqlUsers).AsFuture();
+                users.Wait();
+
+                return users.Result;
+            }
         }
 
         public IEnumerable<IDictionary<string, object>> GetUser(string uid)
@@ -62,7 +71,7 @@ namespace CassandraStudy
             throw new NotImplementedException();
         }
 
-        public int GenerateUsers(int num)
+        public Tuple<int, long> GenerateUsers(int num)
         {
             int count = 0;
             Random rnd = new Random();
@@ -70,11 +79,13 @@ namespace CassandraStudy
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             Guid[] ids = GenerateIds((int)Math.Ceiling(num * 0.8)).ToArray();
 
+            Stopwatch st = new Stopwatch();
+
             using (ICluster cluster = ClusterManager.GetCluster("TestCassandra"))
             {
                 var cmd = cluster.CreatePocoCommand();
 
-
+                st.Start();
                 for (int i = 0; i < num; i++)
                 {
                     string insertUsers = string.Format("INSERT INTO dispatch_cql3.users (uid, flow, last_state, test1, test2)" +
@@ -91,14 +102,19 @@ namespace CassandraStudy
                     {
                         count++;
                     }
+                    else
+                    {
+                        i--;
+                    }
                 }
+                st.Stop();
             }
 
             ClusterManager.Shutdown();
-            return count; ;
+            return new Tuple<int,long>(count, st.ElapsedMilliseconds) ;
         }
 
-        public IEnumerable<Guid> GenerateIds(int num)
+        private IEnumerable<Guid> GenerateIds(int num)
         {
             for (int i = 0; i < num; i++)
             {
