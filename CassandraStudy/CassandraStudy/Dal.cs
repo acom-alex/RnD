@@ -9,6 +9,7 @@ using CassandraSharp.CQLPropertyBag;
 using System.Diagnostics;
 using System.Threading;
 using CassandraStudy.Schemas;
+using System.Threading.Tasks;
 //using CassandraSharp.Extensibility;
 
 namespace CassandraStudy
@@ -27,7 +28,10 @@ namespace CassandraStudy
             using (ICluster cluster = ClusterManager.GetCluster("TestCassandra"))
             {
                 var cmd = cluster.CreatePropertyBagCommand();
-                const string cqlUsers = "SELECT * FROM dispatch_cql3.users";// WHERE uid = '05f7200f-d000-0000-0000-000000000000' AND flow = 'Merlin_1'";
+                string cqlUsers = string.IsNullOrEmpty(startKey) ?
+                    string.Format("SELECT * FROM dispatch_cql3.users LIMIT {0}", slice) :
+                    string.Format("SELECT * FROM dispatch_cql3.users WHERE token(uid) > token('{0}') LIMIT {1}", startKey, slice);
+
                 var users = cmd.Execute<IDictionary<string, object>>(cqlUsers).AsFuture();
                 users.Wait();
 
@@ -89,7 +93,7 @@ namespace CassandraStudy
             using (ICluster cluster = ClusterManager.GetCluster("TestCassandra"))
             {
                 var cmd = cluster.CreatePocoCommand();
-                const string countUsers = "select count(*) from dispatch_cql3.users limit 10000";
+                const string countUsers = "select count(*) from dispatch_cql3.users limit 1000000";
                 const string insertBatch = "INSERT INTO dispatch_cql3.users (uid, flow, last_state, test1, test2) VALUES (?, ?, ?, ?, ?)";
 
                 // Count users before
@@ -99,6 +103,9 @@ namespace CassandraStudy
                 // Add users
                 st.Start();
                 var preparedInsert = cmd.Prepare(insertBatch);
+                List<Task> tasks = new List<Task>();
+
+
                 for (int i = 0; i < num; i++)
                 {
                     var res = preparedInsert.Execute(new
@@ -110,9 +117,12 @@ namespace CassandraStudy
                             test2 = chars[rnd.Next(chars.Length)].ToString()
                         },
                         ConsistencyLevel.QUORUM);//.ContinueWith(_ => Interlocked.Increment(ref count));
-                    res.Wait();
+                    tasks.Add(res);
+
+                    //res.Wait();
                 }
 
+                Task.WaitAll(tasks.ToArray(), 10);
                 st.Stop();
 
                 // Count users after

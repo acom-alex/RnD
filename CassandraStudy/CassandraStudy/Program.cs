@@ -25,16 +25,16 @@ namespace CassandraStudy
             Stopwatch st = new Stopwatch();
 
             //// Generate users
-            //Tuple<int, long> done = dal.GenerateUsers(1000);
-            //Console.WriteLine("Created {0} users in {1} ms.", done.Item1, done.Item2);
+            Tuple<int, long> done = dal.GenerateUsers(100000);
+            Console.WriteLine("Created {0} users in {1} ms.", done.Item1, done.Item2);
 
             //// Reading Users
-            st.Restart();
-            var users = dal.GetUsers("", 0);
-            st.Stop();
-            int count = users.Count();
-            DisplayResult(users);
-            Console.WriteLine("Read {0} users in {1} ms.", count, st.ElapsedMilliseconds);
+            //st.Restart();
+            //var users = dal.GetUsers("", 10);
+            //st.Stop();
+            //int count = users.Count();
+            //DisplayResult(users);
+            //Console.WriteLine("Read {0} users in {1} ms.", count, st.ElapsedMilliseconds);
 
 
             //XmlConfigurator.Configure();
