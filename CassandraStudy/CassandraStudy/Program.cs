@@ -54,7 +54,7 @@ namespace CassandraStudy
 
             //// Generating Users
             //st.Start();
-            Tuple<int, long> done = dal.GenerateUsers(1000);
+            Tuple<int, long> done = dal.GenerateUsers(100);
             //st.Stop();
             
             

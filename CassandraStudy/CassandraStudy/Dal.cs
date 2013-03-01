@@ -7,12 +7,20 @@ using CassandraSharp.CQL;
 using CassandraSharp.CQLPoco;
 using CassandraSharp.CQLPropertyBag;
 using System.Diagnostics;
+using System.Threading;
 //using CassandraSharp.Extensibility;
 
 namespace CassandraStudy
 {
+    public class CountSchema
+    {
+        public long Count { get; set; }
+    }
+
     internal class Dal : IDal
     {
+
+
         public Dal()
         {
             XmlConfigurator.Configure();
@@ -78,40 +86,79 @@ namespace CassandraStudy
             string[] flows = GetAllFlows().ToArray();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             Guid[] ids = GenerateIds((int)Math.Ceiling(num * 0.8)).ToArray();
+            //Guid[] ids = GenerateIds(num).ToArray();
 
             Stopwatch st = new Stopwatch();
 
             using (ICluster cluster = ClusterManager.GetCluster("TestCassandra"))
             {
                 var cmd = cluster.CreatePocoCommand();
+                const string countUsers = "select count(*) from dispatch_cql3.users limit 10000";
+                const string insertBatch = "INSERT INTO dispatch_cql3.users (uid, flow, last_state, test1, test2) VALUES (?, ?, ?, ?, ?)";
+
+                // Count users before
+                var resCount = cmd.Execute<CountSchema>(countUsers).Result;
+                long countBefore = resCount.FirstOrDefault().Count;
 
                 st.Start();
+                var preparedInsert = cmd.Prepare(insertBatch);
                 for (int i = 0; i < num; i++)
                 {
-                    string insertUsers = string.Format("INSERT INTO dispatch_cql3.users (uid, flow, last_state, test1, test2)" +
-                                                           "VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')", 
-                                                           ids[rnd.Next(ids.Length)],
-                                                           flows[rnd.Next(flows.Length)], 
-                                                           "/random", 
-                                                           chars[rnd.Next(chars.Length)],
-                                                           chars[rnd.Next(chars.Length)]);
-                    var resCount = cmd.Execute(insertUsers);
-                    resCount.Wait();
-
-                    if (resCount.IsCompleted)
-                    {
-                        count++;
-                    }
-                    else
-                    {
-                        i--;
-                    }
+                    var res = preparedInsert.Execute(new
+                        {
+                            uid = ids[rnd.Next(ids.Length)].ToString(),
+                            flow = flows[rnd.Next(flows.Length)],
+                            last_state = "/random",
+                            test1 = chars[rnd.Next(chars.Length)].ToString(),
+                            test2 = chars[rnd.Next(chars.Length)].ToString()
+                        },
+                        ConsistencyLevel.QUORUM);//.ContinueWith(_ => Interlocked.Increment(ref count));
+                    res.Wait();
                 }
+
                 st.Stop();
+
+                // Count users after
+                resCount = cmd.Execute<CountSchema>(countUsers).Result;
+                long countAfter = resCount.FirstOrDefault().Count;
+
+                count = (int)(countAfter - countBefore);
             }
 
+
+            //while (Thread.VolatileRead(ref _running) > 0)
+            //{
+            //    Console.WriteLine("Running {0}", _running);
+            //    Thread.Sleep(1000);
+            //}
+
+            //st.Start();
+            //for (int i = 0; i < num; i++)
+            //{
+            //    string insertUsers = string.Format("INSERT INTO dispatch_cql3.users (uid, flow, last_state, test1, test2)" +
+            //                                           "VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')", 
+            //                                           ids[rnd.Next(ids.Length)],
+            //                                           flows[rnd.Next(flows.Length)], 
+            //                                           "/random", 
+            //                                           chars[rnd.Next(chars.Length)],
+            //                                           chars[rnd.Next(chars.Length)]);
+            //    var resCount = cmd.Execute(insertUsers);
+            //    resCount.Wait();
+
+            //    if (resCount.IsCompleted)
+            //    {
+            //        count++;
+            //    }
+            //    else
+            //    {
+            //        i--;
+            //    }
+            //}
+            //st.Stop();
+            //}
+
             ClusterManager.Shutdown();
-            return new Tuple<int,long>(count, st.ElapsedMilliseconds) ;
+            return new Tuple<int, long>(count, st.ElapsedMilliseconds);
         }
 
         private IEnumerable<Guid> GenerateIds(int num)
