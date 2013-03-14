@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{898CA17B-FA32-425A-AB0A-78388ABEB950}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZMQ", "ZMQ\ZMQ.csproj", "{26C6EA9A-D056-47DE-A4B0-4E91F93125BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZClient", "ZClient\ZClient.csproj", "{2962501E-A940-4529-B658-C97B3DEDD520}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{A415B560-A8C9-41A9-A7A8-167D9AEDA269}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dal", "Dal\Dal.csproj", "{E5A5BD2B-A40A-45E5-B7CF-7DC09698A6CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OSX-Python", "OSX-Python", "{97971CB9-B253-4B63-B70D-9D391F28DDFD}"
+	ProjectSection(SolutionItems) = preProject
+		OSX-Python\client.py = OSX-Python\client.py
+		OSX-Python\user.proto = OSX-Python\user.proto
+		OSX-Python\user_pb2.py = OSX-Python\user_pb2.py
+		OSX-Python\user_pb2.pyc = OSX-Python\user_pb2.pyc
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{26C6EA9A-D056-47DE-A4B0-4E91F93125BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26C6EA9A-D056-47DE-A4B0-4E91F93125BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26C6EA9A-D056-47DE-A4B0-4E91F93125BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26C6EA9A-D056-47DE-A4B0-4E91F93125BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2962501E-A940-4529-B658-C97B3DEDD520}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2962501E-A940-4529-B658-C97B3DEDD520}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2962501E-A940-4529-B658-C97B3DEDD520}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2962501E-A940-4529-B658-C97B3DEDD520}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A415B560-A8C9-41A9-A7A8-167D9AEDA269}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A415B560-A8C9-41A9-A7A8-167D9AEDA269}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A415B560-A8C9-41A9-A7A8-167D9AEDA269}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A415B560-A8C9-41A9-A7A8-167D9AEDA269}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5A5BD2B-A40A-45E5-B7CF-7DC09698A6CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5A5BD2B-A40A-45E5-B7CF-7DC09698A6CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5A5BD2B-A40A-45E5-B7CF-7DC09698A6CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5A5BD2B-A40A-45E5-B7CF-7DC09698A6CD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

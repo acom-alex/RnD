@@ -1,0 +1,23 @@
+package Models;
+ 
+option optimize_for = SPEED;
+ 
+message KeyValuePair_String_String {
+   optional string Key = 1;
+   optional string Value = 2;
+}
+
+message User {
+   optional int32 Id = 1 [default = 0];
+   optional string Name = 2;
+   optional bool Active = 3 [default = false];
+   repeated KeyValuePair_String_String Metadata = 4;
+}
+
+message UserRequest {
+	optional int32 UserId = 1 [default = 0];
+}
+ 
+service UserService {
+  rpc GetUser (UserRequest) returns (User);
+}
